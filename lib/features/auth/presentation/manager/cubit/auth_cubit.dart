@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:ai_tennis/features/auth/presentation/manager/state/auth_state.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,9 +28,9 @@ class AuthCubit extends Cubit<AuthState> {
           'uid': user.uid,
           'name': name,
           'email': user.email,
-        }, SetOptions(merge: true));
-
-        emit(SignUpSuccess());
+        }, SetOptions(merge: true)).then((onValue) {
+          emit(SignUpSuccess());
+        });
       });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -47,6 +45,37 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       print(e);
       emit(SignUpError());
+    }
+  }
+
+  Future<void> signIn({
+    required String emailAddress,
+    required String password,
+  }) async {
+    emit(SignInLoading());
+
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+        email: emailAddress,
+        password: password,
+      )
+          .then((onValue) {
+        emit(SignInSuccess());
+      });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+        emit(SignInError());
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+        emit(SignUpError());
+      } else {
+        emit(SignInError());
+      }
+    } catch (e) {
+      print(e);
+      emit(SignInError());
     }
   }
 }

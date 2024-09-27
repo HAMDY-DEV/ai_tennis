@@ -6,40 +6,39 @@ import 'package:ai_tennis/core/responsive/responsive_layout.dart';
 import 'package:ai_tennis/core/util/assets_images.dart';
 import 'package:ai_tennis/features/auth/presentation/manager/cubit/auth_cubit.dart';
 import 'package:ai_tennis/features/auth/presentation/manager/state/auth_state.dart';
-import 'package:ai_tennis/features/auth/presentation/screens/login.dart';
+import 'package:ai_tennis/features/auth/presentation/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AuthCubit(),
       child: Scaffold(
-        body: BlocListener<AuthCubit, AuthState>(
-          listener: (context, state) {
-            if (state is SignUpSuccess) {
-              showToast(msg: 'Done', context: context);
-            } else if (state is SignUpError) {
-              showToast(msg: 'Something went wrong', context: context);
-            } else {
-              showLottieDialog(
-                  context: context, lottieAsset: Assets.imagesAnimation);
-            }
-          },
-          child: Container(
+        body: BlocConsumer<AuthCubit, AuthState>(listener: (context, state) {
+          if (state is SignInSuccess) {
+            navigatorPop(context);
+            showToast(msg: 'Done', context: context);
+          } else if (state is SignInError) {
+            showToast(msg: 'Something went wrong', context: context);
+          } else {
+            showLottieDialog(
+                context: context, lottieAsset: Assets.imagesAnimation);
+          }
+        }, builder: (context, state) {
+          return Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Colors.black, Colors.blue[900]!],
@@ -86,16 +85,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             fontSize: 14,
                           ),
                         ),
-                        Gap(15.h(context)),
-                        TextField(
-                          controller: nameController,
-                          decoration: const InputDecoration(
-                            hintText: 'Name',
-                            hintStyle: TextStyle(color: Colors.white),
-                          ),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        Gap(10.h(context)),
+                        Gap(30.h(context)),
                         TextField(
                           controller: emailController,
                           decoration: const InputDecoration(
@@ -104,7 +94,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ),
                           style: const TextStyle(color: Colors.white),
                         ),
-                        Gap(10.h(context)),
+                        Gap(15.h(context)),
                         TextField(
                           controller: passwordController,
                           obscureText: true,
@@ -114,13 +104,25 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ),
                           style: const TextStyle(color: Colors.white),
                         ),
-                        Gap(10.h(context)),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {},
+                            child: const Text(
+                              'Forget your password?',
+                              style: TextStyle(
+                                color: Colors.blueAccent,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
                         ElevatedButton(
                           onPressed: () {
-                            AuthCubit().signUp(
-                                emailAddress: emailController.text,
-                                password: passwordController.text,
-                                name: nameController.text);
+                            context.read<AuthCubit>().signIn(
+                                  emailAddress: emailController.text,
+                                  password: passwordController.text,
+                                );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue, // لون زر "Sign In"
@@ -130,17 +132,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child: const Text('SIGN UP',
+                          child: const Text('LOGIN',
                               style:
                                   TextStyle(fontSize: 18, color: Colors.white)),
                         ),
-                        Gap(10.h(context)),
+                        Gap(20.h(context)),
                         TextButton(
                           onPressed: () {
-                            navigatorTo(context, const LoginScreen());
+                            navigatorTo(context, const RegistrationScreen());
                           },
                           child: const Text(
-                            "HAVE AN ACCOUNT?",
+                            "DON'T HAVE AN ACCOUNT?",
                             style: TextStyle(color: Colors.white70),
                           ),
                         ),
@@ -150,9 +152,26 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
               ],
             ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
 }
+/*
+
+
+
+
+
+
+  body: 
+
+
+
+
+
+
+
+
+ */

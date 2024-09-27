@@ -2,9 +2,10 @@ import 'package:ai_tennis/core/function/routing.dart';
 import 'package:ai_tennis/core/responsive/responsive_layout.dart';
 import 'package:ai_tennis/core/util/assets_images.dart';
 import 'package:ai_tennis/core/util/colors.dart';
-import 'package:ai_tennis/core/widgets/custom_button.dart';
-import 'package:ai_tennis/features/auth/presentation/screens/registration_screen.dart';
+import 'package:ai_tennis/core/util/text_style.dart';
+import 'package:ai_tennis/features/auth/presentation/screens/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,44 +19,23 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
-      navigatorToReplacement(context, const RegistrationScreen());
+      navigatorToReplacement(context, const Auth());
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      backgroundColor: AppColors.primaryColor,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            Assets.imagesTennis,
-            height: double.infinity,
-            fit: BoxFit.cover,
+          LottieBuilder.asset(
+            Assets.imagesAnimation,
           ),
-          Positioned(
-              bottom: 0,
-              right: 0,
-              left: 0,
-              child: Container(
-                height: 450,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      AppColors.primaryColor.withOpacity(0.1),
-                      AppColors.primaryColor.withOpacity(0.9),
-                      AppColors.primaryColor,
-                      AppColors.primaryColor,
-                    ],
-                  ),
-                ),
-              )),
-          Positioned(
-              bottom: 20,
-              right: 10,
-              child: CustomButton(
-                  text: 'skip', width: 150.w(context), onTap: () {})),
+          Text(' Welcome to Tennis AI',
+              style: getTitleStyle(context,
+                  color: AppColors.whiteColor, fontSize: 20.sp(context))),
         ],
       ),
     );

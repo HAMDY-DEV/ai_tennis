@@ -28,18 +28,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return BlocProvider(
       create: (context) => AuthCubit(),
       child: Scaffold(
-        body: BlocListener<AuthCubit, AuthState>(
-          listener: (context, state) {
-            if (state is SignUpSuccess) {
-              showToast(msg: 'Done', context: context);
-            } else if (state is SignUpError) {
-              showToast(msg: 'Something went wrong', context: context);
-            } else {
-              showLottieDialog(
-                  context: context, lottieAsset: Assets.imagesAnimation);
-            }
-          },
-          child: Container(
+        body: BlocConsumer<AuthCubit, AuthState>(listener: (context, state) {
+          if (state is SignUpSuccess) {
+            showToast(msg: 'Done', context: context);
+          } else if (state is SignUpError) {
+            showToast(msg: 'Something went wrong', context: context);
+          } else {
+            showLottieDialog(
+                context: context, lottieAsset: Assets.imagesAnimation);
+          }
+        }, builder: (context, state) {
+          return Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Colors.black, Colors.blue[900]!],
@@ -117,7 +116,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         Gap(10.h(context)),
                         ElevatedButton(
                           onPressed: () {
-                            AuthCubit().signUp(
+                            context.read<AuthCubit>().signUp(
                                 emailAddress: emailController.text,
                                 password: passwordController.text,
                                 name: nameController.text);
@@ -150,8 +149,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
               ],
             ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
